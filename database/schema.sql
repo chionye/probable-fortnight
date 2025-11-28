@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS stories (
 -- Insert default admin user (username: admin, password: admin123)
 -- Password is hashed using PHP password_hash()
 INSERT INTO admin_users (username, password, email) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin@blog.com');
+('admin', '$2y$12$TaxCuQfyaw73ErWzRDyLCu0Sj0PHo3QaILoSsDvPTVmMFRfnf5nZK', 'admin@blog.com');
 
 -- Insert default categories
 INSERT INTO categories (name, slug) VALUES
