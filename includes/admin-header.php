@@ -31,6 +31,10 @@ requireLogin();
                            class="inline-flex items-center px-1 pt-1 text-sm font-medium hover:text-gray-200">
                             <i class="fas fa-newspaper mr-2"></i> Stories
                         </a>
+                        <a href="<?php echo ADMIN_URL; ?>/categories.php"
+                           class="inline-flex items-center px-1 pt-1 text-sm font-medium hover:text-gray-200">
+                            <i class="fas fa-tags mr-2"></i> Categories
+                        </a>
                         <a href="<?php echo ADMIN_URL; ?>/add-story.php"
                            class="inline-flex items-center px-1 pt-1 text-sm font-medium hover:text-gray-200">
                             <i class="fas fa-plus mr-2"></i> New Story
@@ -41,6 +45,10 @@ requireLogin();
                     <a href="<?php echo SITE_URL; ?>" target="_blank"
                        class="mr-4 text-sm hover:text-gray-200">
                         <i class="fas fa-external-link-alt mr-1"></i> View Site
+                    </a>
+                    <a href="<?php echo ADMIN_URL; ?>/settings.php"
+                       class="mr-4 text-sm hover:text-gray-200">
+                        <i class="fas fa-cog mr-1"></i> Settings
                     </a>
                     <span class="mr-4 text-sm">
                         <i class="fas fa-user mr-1"></i> <?php echo $_SESSION['admin_username']; ?>
