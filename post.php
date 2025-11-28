@@ -39,135 +39,135 @@ if ($story['category_id']) {
 }
 ?>
 
-<article class="py-12">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Breadcrumb -->
-        <nav class="text-sm text-gray-600 mb-6">
-            <a href="<?php echo SITE_URL; ?>" class="hover:text-blue-600">Home</a>
-            <i class="fas fa-chevron-right mx-2 text-xs"></i>
-            <a href="<?php echo SITE_URL; ?>/blog.php" class="hover:text-blue-600">Blog</a>
-            <?php if ($story['category_name']): ?>
-                <i class="fas fa-chevron-right mx-2 text-xs"></i>
-                <a href="<?php echo SITE_URL; ?>/blog.php?category=<?php echo $story['category_id']; ?>" class="hover:text-blue-600">
-                    <?php echo htmlspecialchars($story['category_name']); ?>
-                </a>
-            <?php endif; ?>
-        </nav>
+<article class="py-8">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <!-- Article Header -->
         <header class="mb-8">
             <?php if ($story['category_name']): ?>
                 <a href="<?php echo SITE_URL; ?>/blog.php?category=<?php echo $story['category_id']; ?>"
-                   class="inline-block bg-blue-600 text-white text-sm px-4 py-1 rounded-full mb-4 hover:bg-blue-700">
+                   class="category-label inline-block mb-4">
                     <?php echo htmlspecialchars($story['category_name']); ?>
                 </a>
             <?php endif; ?>
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+
+            <h1 class="article-title mb-6">
                 <?php echo htmlspecialchars($story['title']); ?>
             </h1>
+
             <?php if ($story['excerpt']): ?>
-                <p class="text-xl text-gray-600 mb-6">
+                <p class="text-xl leading-relaxed text-gray-700 mb-6" style="font-family: var(--font-serif);">
                     <?php echo htmlspecialchars($story['excerpt']); ?>
                 </p>
             <?php endif; ?>
-            <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                <div class="flex items-center">
-                    <i class="far fa-user mr-2"></i>
-                    <span>By <?php echo htmlspecialchars($story['author_name']); ?></span>
-                </div>
-                <div class="flex items-center">
-                    <i class="far fa-calendar mr-2"></i>
-                    <span><?php echo formatDate($story['published_at'] ?? $story['created_at']); ?></span>
-                </div>
-                <div class="flex items-center">
-                    <i class="far fa-clock mr-2"></i>
-                    <span><?php echo ceil(str_word_count(strip_tags($story['content'])) / 200); ?> min read</span>
-                </div>
-                <div class="flex items-center">
-                    <i class="far fa-eye mr-2"></i>
-                    <span><?php echo number_format($story['views']); ?> views</span>
+
+            <div class="byline">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                        <p class="byline-author">By <?php echo htmlspecialchars($story['author_name']); ?></p>
+                        <p class="article-date mt-1">
+                            <?php echo strtoupper(formatDate($story['published_at'] ?? $story['created_at'])); ?>
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-4 article-meta">
+                        <span><i class="far fa-clock mr-1"></i> <?php echo ceil(str_word_count(strip_tags($story['content'])) / 200); ?> min read</span>
+                        <span><i class="far fa-eye mr-1"></i> <?php echo number_format($story['views']); ?> views</span>
+                    </div>
                 </div>
             </div>
         </header>
 
         <!-- Featured Image -->
         <?php if ($story['image']): ?>
-            <div class="mb-8">
+            <figure class="mb-8">
                 <img src="<?php echo UPLOAD_URL . $story['image']; ?>"
                      alt="<?php echo htmlspecialchars($story['title']); ?>"
-                     class="w-full rounded-lg shadow-lg">
-            </div>
+                     class="w-full h-auto">
+                <figcaption class="image-caption mt-2">
+                    <?php echo htmlspecialchars($story['title']); ?>
+                </figcaption>
+            </figure>
         <?php endif; ?>
 
         <!-- Article Content -->
-        <div class="prose prose-lg max-w-none mb-12">
-            <div class="bg-white rounded-lg shadow-md p-8">
-                <?php echo nl2br(htmlspecialchars($story['content'])); ?>
+        <div class="article-content mb-12">
+            <div class="dropcap">
+                <?php
+                $paragraphs = explode("\n\n", $story['content']);
+                foreach ($paragraphs as $index => $paragraph) {
+                    if (!empty(trim($paragraph))) {
+                        echo '<p>' . nl2br(htmlspecialchars($paragraph)) . '</p>';
+                    }
+                }
+                ?>
             </div>
         </div>
 
-        <!-- Share Buttons -->
-        <div class="bg-gray-50 rounded-lg p-6 mb-12">
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Share this story</h3>
-            <div class="flex flex-wrap gap-3">
-                <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode(SITE_URL . '/post.php?slug=' . $story['slug']); ?>"
-                   target="_blank"
-                   class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                    <i class="fab fa-facebook mr-2"></i> Facebook
-                </a>
-                <a href="https://twitter.com/intent/tweet?url=<?php echo urlencode(SITE_URL . '/post.php?slug=' . $story['slug']); ?>&text=<?php echo urlencode($story['title']); ?>"
-                   target="_blank"
-                   class="inline-flex items-center px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600">
-                    <i class="fab fa-twitter mr-2"></i> Twitter
-                </a>
-                <a href="https://www.linkedin.com/shareArticle?mini=true&url=<?php echo urlencode(SITE_URL . '/post.php?slug=' . $story['slug']); ?>"
-                   target="_blank"
-                   class="inline-flex items-center px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800">
-                    <i class="fab fa-linkedin mr-2"></i> LinkedIn
-                </a>
-                <button onclick="copyToClipboard()"
-                        class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">
-                    <i class="fas fa-link mr-2"></i> Copy Link
-                </button>
+        <!-- Share Section -->
+        <div class="border-t border-gray-300 pt-6 mb-12">
+            <div class="flex items-center justify-between flex-wrap gap-4">
+                <div class="article-meta">Share this story:</div>
+                <div class="flex flex-wrap gap-3">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode(SITE_URL . '/post.php?slug=' . $story['slug']); ?>"
+                       target="_blank"
+                       class="px-4 py-2 border border-gray-300 hover:bg-gray-100 text-sm">
+                        <i class="fab fa-facebook mr-2"></i>Facebook
+                    </a>
+                    <a href="https://twitter.com/intent/tweet?url=<?php echo urlencode(SITE_URL . '/post.php?slug=' . $story['slug']); ?>&text=<?php echo urlencode($story['title']); ?>"
+                       target="_blank"
+                       class="px-4 py-2 border border-gray-300 hover:bg-gray-100 text-sm">
+                        <i class="fab fa-twitter mr-2"></i>Twitter
+                    </a>
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url=<?php echo urlencode(SITE_URL . '/post.php?slug=' . $story['slug']); ?>"
+                       target="_blank"
+                       class="px-4 py-2 border border-gray-300 hover:bg-gray-100 text-sm">
+                        <i class="fab fa-linkedin mr-2"></i>LinkedIn
+                    </a>
+                    <button onclick="copyToClipboard()"
+                            class="px-4 py-2 border border-gray-300 hover:bg-gray-100 text-sm">
+                        <i class="fas fa-link mr-2"></i>Copy Link
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Related Stories -->
-        <?php if (!empty($related_stories)): ?>
-            <section class="mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 mb-6">Related Stories</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    </div>
+
+    <!-- Related Stories -->
+    <?php if (!empty($related_stories)): ?>
+        <section class="border-t-2 border-black pt-12 mt-12">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="section-header mb-8">Related Stories</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
                     <?php foreach ($related_stories as $related): ?>
-                    <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                    <article class="article-card">
                         <?php if ($related['image']): ?>
                             <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $related['slug']; ?>">
                                 <img src="<?php echo UPLOAD_URL . $related['image']; ?>"
                                      alt="<?php echo htmlspecialchars($related['title']); ?>"
-                                     class="w-full h-40 object-cover">
+                                     class="w-full h-48 object-cover mb-4">
                             </a>
-                        <?php else: ?>
-                            <div class="w-full h-40 bg-gradient-to-r from-blue-400 to-purple-400"></div>
                         <?php endif; ?>
-                        <div class="p-4">
-                            <h3 class="text-lg font-bold text-gray-900 mb-2">
-                                <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $related['slug']; ?>" class="hover:text-blue-600">
-                                    <?php echo htmlspecialchars($related['title']); ?>
-                                </a>
-                            </h3>
-                            <p class="text-sm text-gray-600 mb-3">
-                                <?php echo truncate($related['excerpt'] ?? strip_tags($related['content']), 80); ?>
-                            </p>
-                            <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $related['slug']; ?>"
-                               class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                Read More <i class="fas fa-arrow-right ml-1"></i>
+
+                        <h3 class="article-card-title text-lg mb-3">
+                            <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $related['slug']; ?>">
+                                <?php echo htmlspecialchars($related['title']); ?>
                             </a>
+                        </h3>
+
+                        <p class="article-card-excerpt mb-3">
+                            <?php echo htmlspecialchars($related['excerpt'] ?? truncate(strip_tags($related['content']), 100)); ?>
+                        </p>
+
+                        <div class="article-meta">
+                            <?php echo formatDate($related['created_at']); ?>
                         </div>
                     </article>
                     <?php endforeach; ?>
                 </div>
-            </section>
-        <?php endif; ?>
-    </div>
+            </div>
+        </section>
+    <?php endif; ?>
 </article>
 
 <script>

@@ -14,86 +14,84 @@ $categories = getAllCategories();
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <style>
-        .swiper-button-next, .swiper-button-prev {
-            color: white;
-        }
-        .swiper-pagination-bullet-active {
-            background: white;
-        }
-    </style>
+    <link rel="stylesheet" href="<?php echo SITE_URL; ?>/assets/css/style.css">
 </head>
-<body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-lg sticky top-0 z-50">
+<body class="bg-white">
+    <!-- Date Bar -->
+    <div class="border-b border-gray-200 py-2">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="<?php echo SITE_URL; ?>" class="text-2xl font-bold text-blue-600">
-                            <i class="fas fa-blog mr-2"></i><?php echo SITE_NAME; ?>
-                        </a>
-                    </div>
+            <div class="flex justify-between items-center text-xs">
+                <div class="article-date">
+                    <?php echo strtoupper(date('l, F j, Y')); ?>
                 </div>
-                <div class="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-8">
-                    <a href="<?php echo SITE_URL; ?>" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
-                        Home
-                    </a>
-                    <a href="<?php echo SITE_URL; ?>/blog.php" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">
-                        Blog
-                    </a>
-                    <div class="relative group">
-                        <button class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium flex items-center">
-                            Categories <i class="fas fa-chevron-down ml-1 text-xs"></i>
-                        </button>
-                        <div class="absolute hidden group-hover:block bg-white shadow-lg rounded-md mt-2 py-2 w-48">
-                            <?php foreach ($categories as $cat): ?>
-                                <a href="<?php echo SITE_URL; ?>/blog.php?category=<?php echo $cat['id']; ?>"
-                                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600">
-                                    <?php echo htmlspecialchars($cat['name']); ?>
-                                </a>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    <form action="<?php echo SITE_URL; ?>/search.php" method="GET" class="flex">
-                        <input type="text" name="q" placeholder="Search..."
-                               class="border border-gray-300 rounded-l-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>">
-                        <button type="submit" class="bg-blue-600 text-white px-3 rounded-r-md hover:bg-blue-700">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </form>
-                </div>
-                <!-- Mobile menu button -->
-                <div class="flex items-center sm:hidden">
-                    <button id="mobile-menu-button" class="text-gray-700 hover:text-blue-600">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
+                <div class="flex items-center space-x-4">
+                    <a href="#" class="text-gray-600 hover:text-gray-900"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </div>
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="hidden sm:hidden border-t border-gray-200">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="<?php echo SITE_URL; ?>" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">
-                    Home
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="nyt-nav sticky top-0 z-50 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Logo -->
+            <div class="text-center py-4 border-b border-gray-200">
+                <a href="<?php echo SITE_URL; ?>" class="nyt-logo inline-block">
+                    <?php echo SITE_NAME; ?>
                 </a>
-                <a href="<?php echo SITE_URL; ?>/blog.php" class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-gray-50">
-                    Blog
-                </a>
-                <div class="px-3 py-2">
-                    <p class="text-sm font-medium text-gray-500 mb-2">Categories</p>
-                    <?php foreach ($categories as $cat): ?>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="hidden md:flex items-center justify-between py-3">
+                <div class="flex items-center space-x-1">
+                    <a href="<?php echo SITE_URL; ?>" class="nyt-nav-link">Home</a>
+                    <a href="<?php echo SITE_URL; ?>/blog.php" class="nyt-nav-link">All Stories</a>
+                    <?php foreach (array_slice($categories, 0, 5) as $cat): ?>
                         <a href="<?php echo SITE_URL; ?>/blog.php?category=<?php echo $cat['id']; ?>"
-                           class="block px-3 py-1 text-sm text-gray-700 hover:text-blue-600">
+                           class="nyt-nav-link">
                             <?php echo htmlspecialchars($cat['name']); ?>
                         </a>
                     <?php endforeach; ?>
                 </div>
-                <form action="<?php echo SITE_URL; ?>/search.php" method="GET" class="px-3 py-2">
-                    <input type="text" name="q" placeholder="Search..."
-                           class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div class="flex items-center space-x-3">
+                    <form action="<?php echo SITE_URL; ?>/search.php" method="GET" class="flex">
+                        <input type="text" name="q" placeholder="SEARCH"
+                               class="nyt-search px-3 py-1.5 text-xs w-40"
+                               value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>">
+                        <button type="submit" class="px-3 py-1.5 bg-black text-white text-xs hover:bg-gray-800">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden flex justify-between items-center py-3">
+                <button id="mobile-menu-button" class="text-gray-900">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <form action="<?php echo SITE_URL; ?>/search.php" method="GET">
+                    <button type="button" onclick="this.parentElement.querySelector('input').classList.toggle('hidden'); this.parentElement.querySelector('input').focus();" class="text-gray-900">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <input type="text" name="q" placeholder="Search..." class="hidden nyt-search px-2 py-1 text-sm ml-2">
                 </form>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 py-4">
+                <div class="space-y-2">
+                    <a href="<?php echo SITE_URL; ?>" class="block nyt-nav-link">Home</a>
+                    <a href="<?php echo SITE_URL; ?>/blog.php" class="block nyt-nav-link">All Stories</a>
+                    <?php foreach ($categories as $cat): ?>
+                        <a href="<?php echo SITE_URL; ?>/blog.php?category=<?php echo $cat['id']; ?>"
+                           class="block nyt-nav-link">
+                            <?php echo htmlspecialchars($cat['name']); ?>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </div>
     </nav>

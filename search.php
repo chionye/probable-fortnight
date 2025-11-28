@@ -22,23 +22,23 @@ if (!empty($search_query)) {
 }
 ?>
 
-<div class="bg-white py-6 shadow-sm">
+<div class="border-b-2 border-black py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">Search Results</h1>
+        <h1 class="article-title mb-6">Search</h1>
         <form action="search.php" method="GET" class="max-w-2xl">
             <div class="flex">
                 <input type="text" name="q" placeholder="Search for stories..."
-                       class="flex-1 border border-gray-300 rounded-l-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       class="flex-1 nyt-search px-4 py-3 text-base"
                        value="<?php echo htmlspecialchars($search_query); ?>">
-                <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-r-lg hover:bg-blue-700">
+                <button type="submit" class="nyt-button px-6 py-3">
                     <i class="fas fa-search mr-2"></i> Search
                 </button>
             </div>
         </form>
         <?php if (!empty($search_query)): ?>
-            <p class="text-gray-600 mt-4">
-                Found <strong><?php echo $total_results; ?></strong> <?php echo $total_results === 1 ? 'result' : 'results'; ?>
-                for "<strong><?php echo htmlspecialchars($search_query); ?></strong>"
+            <p class="article-meta mt-4">
+                Found <?php echo number_format($total_results); ?> <?php echo $total_results === 1 ? 'result' : 'results'; ?>
+                for "<?php echo htmlspecialchars($search_query); ?>"
             </p>
         <?php endif; ?>
     </div>
@@ -47,54 +47,44 @@ if (!empty($search_query)) {
 <section class="py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <?php if (empty($search_query)): ?>
-            <div class="bg-white rounded-lg shadow-md p-12 text-center">
-                <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
-                <h3 class="text-2xl font-bold text-gray-900 mb-2">Enter a search term</h3>
-                <p class="text-gray-600">
+            <div class="text-center py-16">
+                <h3 class="article-card-title mb-4">Enter a search term</h3>
+                <p class="article-card-excerpt max-w-lg mx-auto">
                     Use the search box above to find stories by title, content, or excerpt.
                 </p>
             </div>
         <?php elseif (empty($stories)): ?>
-            <div class="bg-white rounded-lg shadow-md p-12 text-center">
-                <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
-                <h3 class="text-2xl font-bold text-gray-900 mb-2">No results found</h3>
-                <p class="text-gray-600 mb-6">
+            <div class="text-center py-16">
+                <h3 class="article-card-title mb-4">No results found</h3>
+                <p class="article-card-excerpt max-w-lg mx-auto mb-6">
                     We couldn't find any stories matching "<?php echo htmlspecialchars($search_query); ?>".
-                    Try using different keywords or browse our <a href="blog.php" class="text-blue-600 hover:text-blue-800">latest stories</a>.
+                    Try using different keywords or browse our <a href="blog.php" class="hover:underline font-bold">latest stories</a>.
                 </p>
             </div>
         <?php else: ?>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="space-y-0 divide-y divide-gray-300">
                 <?php foreach ($stories as $story): ?>
-                <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
-                    <?php if ($story['image']): ?>
-                        <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $story['slug']; ?>">
-                            <img src="<?php echo UPLOAD_URL . $story['image']; ?>"
-                                 alt="<?php echo htmlspecialchars($story['title']); ?>"
-                                 class="w-full h-48 object-cover">
+                <article class="article-card py-8">
+                    <?php if ($story['category_name']): ?>
+                        <a href="<?php echo SITE_URL; ?>/blog.php?category=<?php echo $story['category_id']; ?>"
+                           class="category-label">
+                            <?php echo htmlspecialchars($story['category_name']); ?>
                         </a>
-                    <?php else: ?>
-                        <div class="w-full h-48 bg-gradient-to-r from-blue-400 to-purple-400"></div>
                     <?php endif; ?>
-                    <div class="p-5">
-                        <?php if ($story['category_name']): ?>
-                            <a href="<?php echo SITE_URL; ?>/blog.php?category=<?php echo $story['category_id']; ?>"
-                               class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mb-2">
-                                <?php echo htmlspecialchars($story['category_name']); ?>
-                            </a>
-                        <?php endif; ?>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">
-                            <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $story['slug']; ?>" class="hover:text-blue-600">
-                                <?php echo htmlspecialchars($story['title']); ?>
-                            </a>
-                        </h3>
-                        <p class="text-gray-600 text-sm mb-3">
-                            <?php echo truncate($story['excerpt'] ?? strip_tags($story['content']), 100); ?>
-                        </p>
-                        <div class="flex justify-between items-center text-sm text-gray-500">
-                            <span><i class="far fa-calendar mr-1"></i> <?php echo timeAgo($story['created_at']); ?></span>
-                            <span><i class="far fa-eye mr-1"></i> <?php echo number_format($story['views']); ?> views</span>
-                        </div>
+
+                    <h2 class="article-card-title text-2xl mb-3">
+                        <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $story['slug']; ?>">
+                            <?php echo htmlspecialchars($story['title']); ?>
+                        </a>
+                    </h2>
+
+                    <p class="article-card-excerpt mb-4">
+                        <?php echo htmlspecialchars($story['excerpt'] ?? truncate(strip_tags($story['content']), 150)); ?>
+                    </p>
+
+                    <div class="article-meta">
+                        <?php echo formatDate($story['created_at']); ?> |
+                        <?php echo number_format($story['views']); ?> views
                     </div>
                 </article>
                 <?php endforeach; ?>

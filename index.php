@@ -1,139 +1,151 @@
 <?php
-$page_title = 'Home - ' . SITE_NAME;
+$page_title = SITE_NAME . ' - Latest News and Stories';
 require_once 'includes/header.php';
 
-$featured_stories = getFeaturedStories(5);
-$latest_stories = getAllStories(6, 0, 'published');
+$featured_stories = getFeaturedStories(1);
+$top_story = !empty($featured_stories) ? $featured_stories[0] : null;
+
+$latest_stories = getAllStories(12, 0, 'published');
 ?>
 
-<!-- Featured Stories Slider -->
-<?php if (!empty($featured_stories)): ?>
-<section class="bg-gray-900 py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-white mb-6">Featured Stories</h2>
-        <div class="swiper featured-slider">
-            <div class="swiper-wrapper">
-                <?php foreach ($featured_stories as $story): ?>
-                <div class="swiper-slide">
-                    <div class="relative h-96 rounded-lg overflow-hidden">
-                        <?php if ($story['image']): ?>
-                            <img src="<?php echo UPLOAD_URL . $story['image']; ?>"
-                                 alt="<?php echo htmlspecialchars($story['title']); ?>"
-                                 class="w-full h-full object-cover">
-                        <?php else: ?>
-                            <div class="w-full h-full bg-gradient-to-r from-blue-600 to-purple-600"></div>
-                        <?php endif; ?>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
-                            <?php if ($story['category_name']): ?>
-                                <span class="inline-block bg-blue-600 text-white text-xs px-3 py-1 rounded-full mb-2">
-                                    <?php echo htmlspecialchars($story['category_name']); ?>
-                                </span>
-                            <?php endif; ?>
-                            <h3 class="text-2xl font-bold mb-2">
-                                <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $story['slug']; ?>" class="hover:text-blue-300">
-                                    <?php echo htmlspecialchars($story['title']); ?>
-                                </a>
-                            </h3>
-                            <p class="text-gray-200 mb-3">
-                                <?php echo truncate($story['excerpt'] ?? strip_tags($story['content']), 120); ?>
-                            </p>
-                            <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $story['slug']; ?>"
-                               class="inline-block bg-white text-gray-900 px-4 py-2 rounded-lg hover:bg-gray-200 transition">
-                                Read More <i class="fas fa-arrow-right ml-2"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <?php endforeach; ?>
-            </div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-pagination"></div>
-        </div>
-    </div>
-</section>
-<?php endif; ?>
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-<!-- Latest Stories -->
-<section class="py-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-3xl font-bold text-gray-900">Latest Stories</h2>
-            <a href="<?php echo SITE_URL; ?>/blog.php" class="text-blue-600 hover:text-blue-800 font-medium">
-                View All <i class="fas fa-arrow-right ml-2"></i>
-            </a>
+    <!-- Top Featured Story -->
+    <?php if ($top_story): ?>
+    <article class="featured-story mb-8">
+        <div class="nyt-grid">
+            <div class="grid-span-8">
+                <?php if ($top_story['category_name']): ?>
+                    <a href="<?php echo SITE_URL; ?>/blog.php?category=<?php echo $top_story['category_id']; ?>"
+                       class="category-label">
+                        <?php echo htmlspecialchars($top_story['category_name']); ?>
+                    </a>
+                <?php endif; ?>
+                <h1 class="article-title mb-4">
+                    <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $top_story['slug']; ?>"
+                       class="hover:text-gray-700">
+                        <?php echo htmlspecialchars($top_story['title']); ?>
+                    </a>
+                </h1>
+                <p class="article-excerpt text-lg mb-4">
+                    <?php echo htmlspecialchars($top_story['excerpt'] ?? truncate(strip_tags($top_story['content']), 200)); ?>
+                </p>
+                <div class="article-meta">
+                    By <?php echo htmlspecialchars($top_story['author_name'] ?? 'Staff'); ?> |
+                    <?php echo formatDate($top_story['published_at'] ?? $top_story['created_at']); ?>
+                </div>
+            </div>
+            <div class="grid-span-4">
+                <?php if ($top_story['image']): ?>
+                    <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $top_story['slug']; ?>">
+                        <img src="<?php echo UPLOAD_URL . $top_story['image']; ?>"
+                             alt="<?php echo htmlspecialchars($top_story['title']); ?>"
+                             class="w-full h-auto">
+                    </a>
+                <?php endif; ?>
+            </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <?php foreach ($latest_stories as $story): ?>
-            <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+    </article>
+    <?php endif; ?>
+
+    <!-- Latest Stories Grid -->
+    <div class="border-t-2 border-black pt-6 mb-12">
+        <div class="nyt-grid">
+            <?php
+            $grid_stories = array_slice($latest_stories, 0, 6);
+            foreach ($grid_stories as $index => $story):
+                $span_class = ($index === 0) ? 'grid-span-8' : (($index === 1 || $index === 2) ? 'grid-span-4' : 'grid-span-4');
+            ?>
+            <article class="<?php echo $span_class; ?> article-card">
                 <?php if ($story['image']): ?>
                     <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $story['slug']; ?>">
                         <img src="<?php echo UPLOAD_URL . $story['image']; ?>"
                              alt="<?php echo htmlspecialchars($story['title']); ?>"
-                             class="w-full h-48 object-cover">
+                             class="w-full h-auto mb-3">
                     </a>
-                <?php else: ?>
-                    <div class="w-full h-48 bg-gradient-to-r from-blue-400 to-purple-400"></div>
                 <?php endif; ?>
-                <div class="p-5">
-                    <?php if ($story['category_name']): ?>
-                        <a href="<?php echo SITE_URL; ?>/blog.php?category=<?php echo $story['category_id']; ?>"
-                           class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded mb-2">
-                            <?php echo htmlspecialchars($story['category_name']); ?>
-                        </a>
-                    <?php endif; ?>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">
-                        <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $story['slug']; ?>" class="hover:text-blue-600">
-                            <?php echo htmlspecialchars($story['title']); ?>
-                        </a>
-                    </h3>
-                    <p class="text-gray-600 text-sm mb-3">
-                        <?php echo truncate($story['excerpt'] ?? strip_tags($story['content']), 100); ?>
-                    </p>
-                    <div class="flex justify-between items-center text-sm text-gray-500">
-                        <span><i class="far fa-calendar mr-1"></i> <?php echo timeAgo($story['created_at']); ?></span>
-                        <span><i class="far fa-eye mr-1"></i> <?php echo number_format($story['views']); ?> views</span>
-                    </div>
+
+                <?php if ($story['category_name']): ?>
+                    <a href="<?php echo SITE_URL; ?>/blog.php?category=<?php echo $story['category_id']; ?>"
+                       class="category-label">
+                        <?php echo htmlspecialchars($story['category_name']); ?>
+                    </a>
+                <?php endif; ?>
+
+                <h2 class="article-card-title">
+                    <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $story['slug']; ?>">
+                        <?php echo htmlspecialchars($story['title']); ?>
+                    </a>
+                </h2>
+
+                <p class="article-card-excerpt">
+                    <?php echo htmlspecialchars($story['excerpt'] ?? truncate(strip_tags($story['content']), 120)); ?>
+                </p>
+
+                <div class="article-meta">
+                    <?php echo formatDate($story['created_at']); ?> |
+                    <?php echo number_format($story['views']); ?> views
                 </div>
             </article>
             <?php endforeach; ?>
         </div>
     </div>
-</section>
 
-<!-- News Section -->
-<section class="py-12 bg-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-bold text-gray-900 mb-6">Latest News</h2>
+    <!-- News Section -->
+    <section class="border-t-2 border-black pt-6 mb-12">
+        <h2 class="section-header">Latest News</h2>
         <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div class="col-span-full text-center py-8">
-                <i class="fas fa-spinner fa-spin text-4xl text-blue-600"></i>
-                <p class="text-gray-600 mt-4">Loading news...</p>
+            <div class="col-span-full text-center py-12">
+                <div class="loading-skeleton inline-block w-12 h-12 rounded-full"></div>
+                <p class="article-meta mt-4">Loading news...</p>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+
+    <!-- More Stories -->
+    <section class="border-t-2 border-black pt-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="section-header mb-0 border-0">More Stories</h2>
+            <a href="<?php echo SITE_URL; ?>/blog.php" class="nyt-nav-link">
+                View All <i class="fas fa-arrow-right ml-2 text-xs"></i>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-x-8">
+            <?php
+            $more_stories = array_slice($latest_stories, 6, 9);
+            foreach ($more_stories as $story):
+            ?>
+            <article class="article-card">
+                <?php if ($story['category_name']): ?>
+                    <a href="<?php echo SITE_URL; ?>/blog.php?category=<?php echo $story['category_id']; ?>"
+                       class="category-label">
+                        <?php echo htmlspecialchars($story['category_name']); ?>
+                    </a>
+                <?php endif; ?>
+
+                <h3 class="article-card-title text-lg">
+                    <a href="<?php echo SITE_URL; ?>/post.php?slug=<?php echo $story['slug']; ?>">
+                        <?php echo htmlspecialchars($story['title']); ?>
+                    </a>
+                </h3>
+
+                <p class="article-card-excerpt">
+                    <?php echo htmlspecialchars($story['excerpt'] ?? truncate(strip_tags($story['content']), 100)); ?>
+                </p>
+
+                <div class="article-meta">
+                    <?php echo formatDate($story['created_at']); ?>
+                </div>
+            </article>
+            <?php endforeach; ?>
+        </div>
+    </section>
+
+</main>
 
 <script>
-// Initialize Swiper for featured slider
-const swiper = new Swiper('.featured-slider', {
-    loop: true,
-    autoplay: {
-        delay: 5000,
-        disableOnInteraction: false,
-    },
-    pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-    },
-    navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-    },
-});
-
-// Fetch news from NewsAPI
+// Fetch news from API
 $(document).ready(function() {
     $.ajax({
         url: '<?php echo SITE_URL; ?>/api/news.php',
@@ -143,28 +155,19 @@ $(document).ready(function() {
                 let newsHtml = '';
                 response.articles.slice(0, 8).forEach(function(article) {
                     newsHtml += `
-                        <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+                        <article class="news-card">
                             ${article.urlToImage ? `
-                                <img src="${article.urlToImage}" alt="${article.title}" class="w-full h-40 object-cover">
-                            ` : `
-                                <div class="w-full h-40 bg-gradient-to-r from-green-400 to-blue-400"></div>
-                            `}
-                            <div class="p-4">
-                                <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
-                                    <a href="${article.url}" target="_blank" class="hover:text-blue-600">
-                                        ${article.title}
-                                    </a>
-                                </h3>
-                                <p class="text-gray-600 text-sm mb-3 line-clamp-3">
-                                    ${article.description || 'No description available'}
-                                </p>
-                                <div class="flex justify-between items-center text-xs text-gray-500">
-                                    <span>${article.source.name}</span>
-                                    <a href="${article.url}" target="_blank" class="text-blue-600 hover:text-blue-800">
-                                        Read more <i class="fas fa-external-link-alt ml-1"></i>
-                                    </a>
-                                </div>
-                            </div>
+                                <img src="${article.urlToImage}" alt="${article.title}" class="w-full h-32 object-cover mb-2">
+                            ` : ''}
+                            <p class="news-source mb-2">${article.source.name}</p>
+                            <h3 class="article-card-title text-base mb-2">
+                                <a href="${article.url}" target="_blank" rel="noopener">
+                                    ${article.title}
+                                </a>
+                            </h3>
+                            <p class="article-card-excerpt text-sm">
+                                ${article.description || ''}
+                            </p>
                         </article>
                     `;
                 });
@@ -172,8 +175,7 @@ $(document).ready(function() {
             } else {
                 $('#news-container').html(`
                     <div class="col-span-full text-center py-8">
-                        <i class="fas fa-exclamation-circle text-4xl text-red-600"></i>
-                        <p class="text-gray-600 mt-4">Unable to load news at this time.</p>
+                        <p class="article-meta">Unable to load news at this time.</p>
                     </div>
                 `);
             }
@@ -181,28 +183,12 @@ $(document).ready(function() {
         error: function() {
             $('#news-container').html(`
                 <div class="col-span-full text-center py-8">
-                    <i class="fas fa-exclamation-circle text-4xl text-red-600"></i>
-                    <p class="text-gray-600 mt-4">Unable to load news at this time.</p>
+                    <p class="article-meta">Unable to load news at this time.</p>
                 </div>
             `);
         }
     });
 });
 </script>
-
-<style>
-    .line-clamp-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    .line-clamp-3 {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-</style>
 
 <?php require_once 'includes/footer.php'; ?>
